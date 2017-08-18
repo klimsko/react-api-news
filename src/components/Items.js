@@ -12,7 +12,7 @@ const Items = (props) => {
 			<div className="col-sm-4" id={props.id}>
 	      <div className="well">
 	        <h4>{props.title}</h4>
-	        <img src={props.image} style={imgStyle} />
+	        <img src={props.image} style={imgStyle} alt={props.imgAlt} />
 	        <p>{props.text}</p>
 	        <b>{date}</b>
 	      </div>

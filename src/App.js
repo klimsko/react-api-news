@@ -1,8 +1,71 @@
 import React, { Component } from 'react';
 
 import Articles from './components/Articles';
+import Datepicker from './components/Datepicker';
+import Loader from './components/Loader';
+import fetch from 'isomorphic-fetch';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      articles: [],
+      isLoading: true,
+      day: '',
+      month: '',
+      year: ''
+    }
+  }
+
+  componentDidMount() {
+    const date = new Date(),
+          day = date.getDate()-1,
+          month = date.getMonth()+1,
+          year = date.getFullYear();
+
+    this.setState({ day, month, year },
+      this.sendRequest
+    )
+  }
+
+  sendRequest() {
+    const year = this.state.year,
+          month = this.state.month;
+
+    let url = `https://api.nytimes.com/svc/archive/v1/${year}/${month}.json?`;
+    const api = "api-key=1d4264cd34b74feda722da8bb27b8788";
+
+    url += api;
+    fetch(url)
+      .then(response => {
+        if (response.status >= 400) {
+          throw new Error("Bad response from server");
+        }
+        return response.json();
+      })
+      .then(news => {
+        this.setState({ 
+          articles: news.response.docs, 
+          isLoading: false
+        });
+        }
+      );
+  }
+
+  pickDate(e) {
+    e.preventDefault();
+    
+    this.setState({ isLoading: true }, this.sendRequest);
+  }
+
+  onChangeField(field, event) {
+    const value = parseInt(event.target.value, 10);
+    this.setState({
+      [field]: value
+    })
+  }
+
   render() {
     return (
       <div>
@@ -15,15 +78,10 @@ class App extends Component {
                 <span className="icon-bar"></span>
                 <span className="icon-bar"></span>                        
               </button>
-              <a className="navbar-brand" href="#">Logo</a>
+              <a className="navbar-brand" href="">NYT Archive</a>
             </div>
             <div className="collapse navbar-collapse" id="myNavbar">
-              <ul className="nav navbar-nav">
-                <li className="active"><a href="#">Dashboard</a></li>
-                <li><a href="#">Age</a></li>
-                <li><a href="#">Gender</a></li>
-                <li><a href="#">Geo</a></li>
-              </ul>
+              
             </div>
           </div>
         </nav>
@@ -31,18 +89,26 @@ class App extends Component {
         <div className="container-fluid">
           <div className="row content">
             <div className="col-sm-3 sidenav hidden-xs">
-              <h2>Logo</h2>
-              <ul className="nav nav-pills nav-stacked">
-                <li className="active"><a href="#section1">Dashboard</a></li>
-                <li><a href="#section2">Age</a></li>
-                <li><a href="#section3">Gender</a></li>
-                <li><a href="#section3">Geo</a></li>
-              </ul><br />
+              <h2>The New York Times Archive</h2>
+
+              <Datepicker 
+                day={this.state.day}
+                month={this.state.month}
+                year={this.state.year}
+                onChangeField={this.onChangeField.bind(this)}
+                pickDate={this.pickDate.bind(this)}
+              />
+
             </div>
             <br />
             <div className="col-sm-9">
-              
-              <Articles />
+            
+            <Loader isLoading={this.state.isLoading}>
+              <Articles
+                articles={this.state.articles}
+                day={this.state.day}
+              />
+            </Loader>
               
             </div>
           </div>
