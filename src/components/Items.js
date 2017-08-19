@@ -1,8 +1,11 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const Items = (props) => {
 	const imgStyle = {
-		width: 190,
+		maxWidth: 190,
+		width: "100%",
+		height: "auto",
 		display: "block",
     margin: "19px auto"
 	}
@@ -19,6 +22,15 @@ const Items = (props) => {
 	    </div>
     
 	)
+}
+
+Items.propTypes = {
+	pubDate: PropTypes.string.isRequired,
+	id: PropTypes.string.isRequired,
+	title: PropTypes.string.isRequired,
+	image: PropTypes.string.isRequired,
+	imgAlt: PropTypes.string.isRequired,
+	text: PropTypes.string.isRequired
 }
 
 export default Items;

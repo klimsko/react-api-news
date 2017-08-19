@@ -1,8 +1,14 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 
 import Items from './Items'
 
 export default class Articles extends Component {
+	static propTypes = {
+		articles: PropTypes.array.isRequired,
+		day: PropTypes.string.isRequired
+	}
+
 	constructor(props) {
 		super(props);
 
@@ -55,7 +61,7 @@ export default class Articles extends Component {
 					imgLink = "https://cdn.shopify.com/s/files/1/0811/5009/t/6/assets/no-image.svg";
 				}
 				
-			if (day === this.props.day) {
+			if (day === parseInt(this.props.day, 10)) {
 				items.push(
 					<Items
 						key={index}
